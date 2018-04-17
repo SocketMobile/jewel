@@ -1,0 +1,48 @@
+language: android
+jdk: openjdk8
+sudo: false  # Use container-based builds
+
+env:
+  global:
+    # Fix: Unable to launch emulator via command line
+    # see - https://issuetracker.google.com/issues/37137213#comment25
+    - PATH=PATH=${ANDROID_HOME}:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}
+  matrix:
+    - API=24 ABI=armeabi-v7a TAG=default
+android:
+  components:
+    - tools
+before_install:
+  - touch "$HOME/.android/repositories.cfg"
+  - mkdir -p "$ANDROID_HOME/licenses"
+  - echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
+  - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> $ANDROID_HOME/licenses/android-sdk-license
+  - export EMULATOR_PACKAGE="system-images;android-${API};${TAG};${ABI}"
+  - export AVD_NAME=AVD-${API}-${TAG}-${ABI}
+install:
+  - echo yes | sdkmanager tools
+  - echo yes | sdkmanager platform-tools
+  - echo yes | sdkmanager emulator
+  - echo yes | sdkmanager "${EMULATOR_PACKAGE}"
+  - echo no  | avdmanager create avd --name $AVD_NAME --package "${EMULATOR_PACKAGE}" --force
+  - emulator -avd $AVD_NAME -no-window -camera-back none -camera-front none -selinux permissive -verbose -qemu -m 512 &
+before_script:
+  - android-wait-for-emulator
+
+  # Turn off animations
+  - adb shell settings put global window_animation_scale 0
+  - adb shell settings put global transition_animation_scale 0
+  - adb shell settings put global animator_duration_scale 0
+
+  # Wake up
+  - adb shell input keyevent 82 &
+script:
+  - ./gradlew build connectedCheck
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
