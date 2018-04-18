@@ -7,6 +7,8 @@ env:
     # Fix: Unable to launch emulator via command line
     # see - https://issuetracker.google.com/issues/37137213#comment25
     - PATH=PATH=${ANDROID_HOME}:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}
+    - secure: JvTlGc02+sIto5HVuwJv8CRwCWbZx+UME7D8FFdnb5WHnB8ZVetCT9Yoi7/xHrF1n+XqFpDqokSOfILSuTFE4nHfkVRwMfIsdUUbjUZswsTEBZ7qDi/yd49HiJAdkfI1aXEy1a1RV61O2h5YDpwuSnbkme5HY8iqlkjKjXDO+8P16K7IKGqr6/VaLRhgiypQoXOhmtuvS44MjcnMMryjBntzVK0cA0BP/z0XaQLweffgvbDNsfBxn79TgFzJa2Y6Px+9c4S3c/QOzIwWCm1grcmv2rV0RN5R9WN687/1EDsiMi+lVL3lcFRcFFnzwRL6xxRsrQc+9blATBrluulKiWpOcmjHr5Qh4uIEAbgGPRdaoXxGfiLH3gqvUU2d01HRgi91kVveZ+qRGaq5i2U7TucPnqMooaQ4jlrskIYryJWOKoB/bGKtiCAW5O8Y3hKrEnMpmBviBKw0XZkjCRW6w0AZg63iQruChhWeje1taaamfrXwpOXfs7Ttlvfwj7SUU0AXzOoMMx8CIRr9ksnUJTC08Kz3lNFcikWLDkNmGOR/fItyfnHUs+e2UAaPRp68v7+Px9jJZjJQ5oIJSWpYlSyATKNC6lxs49316Ex0VDmimO1ITNodxg/Q9rwluahyp2Qs+VZZZSpHw/3lPlaY3j5rLNl4/MQwJKSwuKrRisU=
+    - secure: caEM249z66vo3zOVtbilfR9cF43ul71DACi4f9559v7tTTgoXBc4VfqpUH8iK/JbAt41w1etbgTjbgVlzt8cs/gP/acgSGPNiXzX9V0x8Od8NC8tXEWg54NOUgQkLulDZBCSWX/rjw83Ip4T4AaL3CX+jvjGgif5PaHSiMz84jt+z6PsrV4zfW3Tdf9pf6iieY6LAi4yOwaE4e5K3Yf1fojKtMEs6V7jsWuaaWPvcp1lZ3OhVM5BiQm952U7wyN/uIhPa5T2yLsMB2YpbIiZ/f1wZNlkydzhl2F9oL2+PZO2flh2hPXUsJ5o9k10hiUIZ4h0nKJlsvfcqCCYtAKgSMHcQfJ1uKgWo37GU6gqEk+ASdrvkj3/Np7rm4ZSGquyX9JvRHu5jeRAaNDqSPDauQ3wCCFkprP6swQN1/3H3c59aZSfgy1f8Kn87ySQ5NgyUCvK16BhX+rzZ+2NRMk+r+B0EolHdwO5sU5gebk+5XVUspcZMXvVNaIZGnVlIk/FVz80CCb1421sI9BL88A2TTYjVdEEEfJoxk/2ILPjvFgh4NkD20afTb+zcMRYadh5VbfvsQc+v5BSIglKyTTAWvXJL3o+NKMGzy7k0O2I1ccMgzNx44Uw0Xa223OIj5AetdkmzeL4hiAvAFToVVChxVZZcdhkb4y8QTsM4MtB9no=
   matrix:
     - API=24 ABI=armeabi-v7a TAG=default
 android:
@@ -38,6 +40,13 @@ before_script:
   - adb shell input keyevent 82 &
 script:
   - ./gradlew build connectedCheck
+deploy:
+  provider: script
+  script: ./gradlew bintrayUpload
+  skip_cleanup: true
+  on:
+    all_branches: true
+    condition: "${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH} =~ ^releases/.*"
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/

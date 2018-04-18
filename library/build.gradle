@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.jfrog.bintray'
 
 ext {
   PUBLISH_GROUP_ID = 'com.socketmobile.tools'
@@ -34,3 +35,18 @@ dependencies {
 }
 
 apply from: "$rootDir/android-release-aar.gradle"
+
+bintray {
+  user = System.getenv('BINTRAY_USR')
+  key = System.getenv('BINTRAY_PSW')
+  publications = ['maven']
+  pkg {
+    repo = 'maven'
+    name = project.PUBLISH_ARTIFACT_ID
+    userOrg = 'socketmobiletools'
+    version {
+      name = project.PUBLISH_VERSION
+      released = new Date()
+    }
+  }
+}
