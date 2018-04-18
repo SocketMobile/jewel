@@ -10,8 +10,8 @@ android {
     applicationId "com.example.socketmobile.tools.jewel"
     minSdkVersion 14
     targetSdkVersion 27
-    versionCode 1
-    versionName "1.0"
+    versionCode buildVersionCode()
+    versionName buildVersionName()
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
   }
   buildTypes {

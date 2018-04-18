@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 ext {
   PUBLISH_GROUP_ID = 'com.socketmobile.tools'
   PUBLISH_ARTIFACT_ID = 'jewel'
-  PUBLISH_VERSION = '0.9.0'
+  PUBLISH_VERSION = buildVersionName()
 }
 
 android {
